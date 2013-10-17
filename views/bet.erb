@@ -1,0 +1,12 @@
+<h3>Welcome to BlackJack <%= session[:name] %> </h3>
+
+<form method="get" action="/game">
+
+<h4>Please place your bet</h4>
+<p>You have <%= session[:stash] %>$</p>
+<div class="input-prepend">
+  <span class="add-on">Bet:</span>
+  <input class="span2" id="prependedInput" type="text" name="bet">
+<button class="btn btn-primary" type="Submit">Place Bet</button>
+</div>
+</form>
