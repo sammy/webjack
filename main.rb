@@ -69,6 +69,17 @@ helpers do
     end
     imageholder
   end
+
+  def dealer_check(hand)
+    dealertotal = calculate_total(hand)
+    if dealertotal == 21
+      @error = "Sorry #{session[:name]}, dealer hit Blackjack. You lose"
+    elsif dealertotal > 21
+      @success = "Congratulations #{session[:name]}, dealer busted. You win."
+    elsif dealertotal >= 17
+      redirect '/game/comparehands'
+    end
+  end
   
 
 end
@@ -99,6 +110,7 @@ end
 
 
 get '/game' do
+  session[:bet] = params[:bet]
   session[:stash] -= params[:bet].to_i
   values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
   suits = ['♠', '♣', '♥', '♦']
@@ -145,8 +157,58 @@ post '/game/player/stay' do
 
   @success = "#{session[:name]}, you've chosen to stay at #{calculate_total(session[:player_hand])}"
   @show_hit_or_stay = false
+  redirect '/game/dealer'
+end
+
+get '/game/dealer' do
+
+  @show_hit_or_stay = false
+  @playershand = to_image(session[:player_hand])
+  @dealershand = to_image(session[:dealer_hand])
+  @dealerturn = true
+  @stay = true
+
+  
+
+  dealer_check(session[:dealer_hand])
+
   erb :game
 end
+
+post '/game/dealer' do 
+  session[:dealer_hand] << session[:deck].pop
+
+  @show_hit_or_stay = false
+  @playershand = to_image(session[:player_hand])
+  @dealershand = to_image(session[:dealer_hand])
+  @dealerturn = true
+  @stay = true
+
+  dealer_check(session[:dealer_hand])
+
+  erb :game
+
+end
+
+get '/game/comparehands' do
+
+  @playershand = to_image(session[:player_hand])
+  @dealershand = to_image(session[:dealer_hand])
+  @show_hit_or_stay = false
+  playertotal = calculate_total(session[:player_hand])
+  dealertotal = calculate_total(session[:dealer_hand])
+
+  if playertotal > dealertotal
+    @success = "#{session[:name]} wins with #{playertotal}. Dealer has #{dealertotal}"
+  elsif playertotal < dealertotal
+    @error = "Sorry #{session[:name]}. Dealer has #{dealertotal} and wins your #{playertotal}"
+  else
+    @success = "#{session[:name]} and Dealer both have #{playertotal}. It's a tie"
+  end
+
+  erb :game
+end
+
 
 post '/end_game' do
 

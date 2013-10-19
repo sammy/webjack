@@ -13,6 +13,13 @@
   <hr>
   <%end%>
 
+  <% if @dealerturn == true %>
+  <form method="post" action="/game/dealer" id="dealerhit">  
+    <input type="submit" class="btn btn-primary" value="Show dealers next card >>">
+  </form>
+  <% end %>
+
+
   <h3><%=session[:name]%>'s cards</h3>
   <% @playershand.each do |picture|%>
     <img src="/images/cards/<%=picture%>.jpg" class="shadow" />
