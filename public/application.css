@@ -1,0 +1,14 @@
+form#hit {
+  float: left;
+  margin-right: 10px;
+}
+
+form#stay {
+  float: left;
+}
+
+img.shadow {
+  -webkit-box-shadow: 3px 3px 3px #7C7C7C;
+  box-shadow:10px 10px 10px #cccc;
+  margin-right: 10px;
+}

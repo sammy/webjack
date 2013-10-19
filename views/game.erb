@@ -1,29 +1,39 @@
 
-  <h2><%= session[:name] %> we will now deal the starting cards </h2>
+  
 
   <h3>Dealer's cards</h3>
-  <img src='images/cards/cover.jpg' />
-  <img style="-webkit-box-shadow: 3px 3px 3px #7C7C7C;box-shadow:10px 10px 10px #cccc;" src='images/cards/<%=@dealershand.last%>.jpg' />
-
+  <% if @stay == true %>
+  <% @dealershand.each do |picture|%>
+    <img src="/images/cards/<%=picture%>.jpg" class="shadow" />
+  <%end%>
+  <p>Dealer has a total of <%=calculate_total(session[:dealer_hand])%></p>
+  <% else %>
+  <img src='/images/cards/cover.jpg' />
+  <img src='/images/cards/<%=@dealershand.last%>.jpg' class="shadow"/>
   <hr>
+  <%end%>
 
   <h3><%=session[:name]%>'s cards</h3>
   <% @playershand.each do |picture|%>
-    <img src="images\cards\<%=picture%>.jpg" style="-webkit-box-shadow: 3px 3px 3px #7C7C7C;box-shadow:10px 10px 10px #cccc;" />
+    <img src="/images/cards/<%=picture%>.jpg" class="shadow" />
   <%end%>
-  <h4><%=session[:player_name]%>, you have a total of <%= calculate_total(session[:player_hand]) %></h4>
+  <h4><%=session[:name]%>, you have a total of <%= calculate_total(session[:player_hand]) %></h4>
 
-  <p><%=session[:name]%>, would you like to hit or stay</p>
+  
   
   <% if @show_hit_or_stay %>
-  <form method="post" action="/game/player/hit">  
-    <input type="submit" class="btn btn-primary" value="HIT">
+  <p><%=session[:name]%>, would you like to hit or stay</p>
+  <form method="post" action="/game/player/hit" id="hit">  
+    <input type="submit" class="btn btn-success" value="HIT">
   </form>
   
-  <form method="post" action="/game/player/stay">
-    <input type="submit" class="btn btn-primary" value="STAY">
+  <form method="post" action="/game/player/stay" id="stay">
+    <input type="submit" class="btn btn-warning" value="STAY">
   </form>
   <% end %>
+
+
+
 
   
 

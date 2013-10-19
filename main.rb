@@ -88,7 +88,7 @@ get '/' do
 end
 
 get '/new_game' do
-  session[:stash] = 500
+  session[:stash] ||= 500
   erb :index
 end
 
@@ -124,18 +124,25 @@ end
 
 post '/game/player/hit' do
   session[:player_hand] << session[:deck].pop
+
+  @playershand = to_image(session[:player_hand])
+  @dealershand = to_image(session[:dealer_hand])
   
   if calculate_total(session[:player_hand]) > 21
     @error = "#{session[:name]}, looks like you bust!"
     @show_hit_or_stay = false
   end
 
-  is_blackjack(session[:player_hand])
+  is_blackjack(session[:player_hand],'player')
 
   erb :game
 end
 
 post '/game/player/stay' do
+  @stay = true
+  @playershand = to_image(session[:player_hand])
+  @dealershand = to_image(session[:dealer_hand])
+
   @success = "#{session[:name]}, you've chosen to stay at #{calculate_total(session[:player_hand])}"
   @show_hit_or_stay = false
   erb :game
