@@ -2,7 +2,7 @@
   
 
   <h3>Dealer's cards</h3>
-  <% if @stay == true %>
+  <% if @stay %>
   <% @dealershand.each do |picture|%>
     <img src="/images/cards/<%=picture%>.jpg" class="shadow" />
   <%end%>
