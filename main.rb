@@ -30,11 +30,13 @@ helpers do
       if p == 'player'
       @success = "Congrats you ve hit BlackJack!!" 
       @show_hit_or_stay = false
+      @game_end = true
       session[:stash] += session[:bet] * 2
       else
         @success = "Sorry, dealer has hit blackjack!" 
         @show_hit_or_stay = false
-        session[:stash] -= session[:bet]
+        @game_end = true
+        @stay = true
       end
     end
   end
@@ -76,10 +78,16 @@ helpers do
     dealertotal = calculate_total(hand)
     if dealertotal == 21
       @error = "Sorry #{session[:name]}, dealer hit Blackjack. You lose"
+      @game_end = true
       @stay = true
+      @dealerturn = false
+      session[:bet] = 0
     elsif dealertotal > 21
       @success = "Congratulations #{session[:name]}, dealer busted. You win."
+      @game_end = true
+      @dealerturn = false
       session[:stash] += session[:bet]*2
+      session[:bet] = 0
     elsif dealertotal >= 17
       redirect '/game/comparehands'
     end
@@ -108,6 +116,10 @@ get '/new_game' do
 end
 
 get '/bet' do
+  if session[:stash] <= 0
+    redirect '/game/over'
+  end
+
   session[:name] ||= params[:name]
   session[:bet] = 0
   erb :bet
@@ -116,7 +128,16 @@ end
 
 get '/game' do
   session[:bet] = params[:bet].to_i
-  session[:stash] -= params[:bet].to_i
+  if session[:stash] - session[:bet] < 0 
+    @error = 'Cant bet more than what you have in your stash!'
+    halt erb(:bet)
+  elsif session[:bet] == 0 || session[:bet] < 0
+    @error = 'Bet must be a positive numeric amount!'
+    halt erb(:bet)
+  else
+    session[:stash] -= params[:bet].to_i
+  end
+
   values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
   suits = ['♠', '♣', '♥', '♦']
   session[:deck] = values.product(suits).shuffle!
@@ -148,7 +169,8 @@ post '/game/player/hit' do
   if calculate_total(session[:player_hand]) > 21
     @error = "#{session[:name]}, looks like you bust!"
     @show_hit_or_stay = false
-    session[:stash] -= session[:bet]
+    @game_end = true
+    session[:bet] = 0
   end
 
   is_blackjack(session[:player_hand],'player')
@@ -205,20 +227,27 @@ get '/game/comparehands' do
 
   if playertotal > dealertotal
     @success = "#{session[:name]} wins with #{playertotal}. Dealer has #{dealertotal}"
+    @game_end = true
     session[:stash] += session[:bet]*2
+    session[:bet] = 0
   elsif playertotal < dealertotal
     @error = "Sorry #{session[:name]}. Dealer has #{dealertotal} and wins your #{playertotal}"
+    @game_end = true
+    session[:bet] = 0
   else
     @success = "#{session[:name]} and Dealer both have #{playertotal}. It's a tie"
+    @game_end = true
     session[:stash] += session[:bet]
+    session[:bet] = 0
   end
 
   erb :game
 end
 
 
-post '/end_game' do
-
+get '/game/over' do
+  
+  erb :over
 end
 
 

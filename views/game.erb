@@ -1,22 +1,37 @@
-
   
-
+  <% if @game_end %>
+  <div class="lead">
+    <form method="get" action="/bet" id="hit">
+      <input type="submit" class="btn btn-primary" value="Play again">
+    </form>
+    <form method="get" action="/game/over" id="">
+      <input type="submit" class="btn" value="No thanks">
+    </form>
+  </div>
+  <%end%>
+  
   <h3>Dealer's cards</h3>
   <% if @stay %>
   <% @dealershand.each do |picture|%>
     <img src="/images/cards/<%=picture%>.jpg" class="shadow" />
   <%end%>
-  <p>Dealer has a total of <%=calculate_total(session[:dealer_hand])%></p>
+
+<br/> 
+<br/>
+  <blockquote><p>Dealer has a total of <span class="badge badge-warning"><%=calculate_total(session[:dealer_hand])%></span></p></blockquote>
+
   <% else %>
   <img src='/images/cards/cover.jpg' />
   <img src='/images/cards/<%=@dealershand.last%>.jpg' class="shadow"/>
   <hr>
   <%end%>
 
-  <% if @dealerturn == true %>
+  <% if @dealerturn %>
+  <blockquote>
   <form method="post" action="/game/dealer" id="dealerhit">  
     <input type="submit" class="btn btn-primary" value="Show dealers next card >>">
   </form>
+  </blockquote>
   <% end %>
 
 
@@ -24,19 +39,25 @@
   <% @playershand.each do |picture|%>
     <img src="/images/cards/<%=picture%>.jpg" class="shadow" />
   <%end%>
-  <h4><%=session[:name]%>, you have a total of <%= calculate_total(session[:player_hand]) %></h4>
+  <br/>
+  <br>
+  <blockquote><p><%=session[:name]%>, you have a total of <span class="badge badge-info"><%= calculate_total(session[:player_hand]) %></span></p></blockquote>
+  <h4></h4>
 
   
   
   <% if @show_hit_or_stay %>
-  <p><%=session[:name]%>, would you like to hit or stay</p>
-  <form method="post" action="/game/player/hit" id="hit">  
-    <input type="submit" class="btn btn-success" value="HIT">
-  </form>
-  
-  <form method="post" action="/game/player/stay" id="stay">
-    <input type="submit" class="btn btn-warning" value="STAY">
-  </form>
+  <blockquote>
+    <p>Would you like to hit or stay?</p>
+  </blockquote>
+  <blockquote>
+    <form method="post" action="/game/player/hit" id="hit">  
+      <input type="submit" class="btn btn-success" value="HIT">
+    </form>
+    <form method="post" action="/game/player/stay" id="stay">
+      <input type="submit" class="btn btn-warning" value="STAY">
+    </form>
+    </blockquote>
   <% end %>
 
 
