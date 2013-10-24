@@ -121,6 +121,12 @@ get '/bet' do
   end
 
   session[:name] ||= params[:name]
+
+  if session[:name].empty?
+    @error = 'You must enter a name!'
+    halt erb(:index)
+  end
+
   session[:bet] = 0
   erb :bet
 end
@@ -129,10 +135,10 @@ end
 get '/game' do
   session[:bet] = params[:bet].to_i
   if session[:stash] - session[:bet] < 0 
-    @error = 'Cant bet more than what you have in your stash!'
+    @error = "#{session[:name]}, you cant bet more than what you have in your stash!"
     halt erb(:bet)
   elsif session[:bet] == 0 || session[:bet] < 0
-    @error = 'Bet must be a positive numeric amount!'
+    @error = '#{session[:name]}, your bet must be a positive numeric amount!'
     halt erb(:bet)
   else
     session[:stash] -= params[:bet].to_i
@@ -167,7 +173,7 @@ post '/game/player/hit' do
   @dealershand = to_image(session[:dealer_hand])
   
   if calculate_total(session[:player_hand]) > 21
-    @error = "#{session[:name]}, looks like you bust!"
+    @error = "#{session[:name]}, looks like you busted!"
     @show_hit_or_stay = false
     @game_end = true
     session[:bet] = 0
@@ -175,7 +181,7 @@ post '/game/player/hit' do
 
   is_blackjack(session[:player_hand],'player')
 
-  erb :game
+  erb :game, layout: false
 end
 
 post '/game/player/stay' do
@@ -198,7 +204,7 @@ get '/game/dealer' do
 
   dealer_check(session[:dealer_hand])
 
-  erb :game
+  erb :game, layout: false
 end
 
 post '/game/dealer' do 
@@ -212,7 +218,7 @@ post '/game/dealer' do
 
   dealer_check(session[:dealer_hand])
 
-  erb :game
+  erb :game, layout: false
 
 end
 
@@ -226,7 +232,7 @@ get '/game/comparehands' do
   @stay = true
 
   if playertotal > dealertotal
-    @success = "#{session[:name]} wins with #{playertotal}. Dealer has #{dealertotal}"
+    @success = "#{session[:name]} you win with #{playertotal}. Dealer has #{dealertotal}"
     @game_end = true
     session[:stash] += session[:bet]*2
     session[:bet] = 0
@@ -235,13 +241,13 @@ get '/game/comparehands' do
     @game_end = true
     session[:bet] = 0
   else
-    @success = "#{session[:name]} and Dealer both have #{playertotal}. It's a tie"
+    @success = "#{session[:name]} you and the Dealer both have #{playertotal}. It's a tie"
     @game_end = true
     session[:stash] += session[:bet]
     session[:bet] = 0
   end
 
-  erb :game
+  erb :game, layout: false
 end
 
 

@@ -1,19 +1,66 @@
   
+   <%if @error %>
+    <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-header">
+        <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> -->
+        <h3 id="myModalLabel" class="text-error">Tough luck <%=session[:name]%>!!</h3>
+      </div>
+    <div class="modal-body">
+      <p class="text-error"><%=@error%></p>
+    </div>
+    <div class="modal-footer">
+      <!-- <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      <button class="btn btn-primary">Save changes</button> -->
+      <form method="get" action="/bet" id="play_again">
+        <input type="submit" class="btn btn-primary" value="Play again">
+      </form>
+      <form method="get" action="/game/over" id="end">
+        <input type="submit" class="btn" value="No thanks">
+      </form>
+    </div>
+    </div>
+    <% end %>
+
+    <%if @success %>
+      <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+        <h3 id="myModalLabel" class="text-success">Congratulations <%=session[:name]%>!!</h3>
+      </div>
+    <div class="modal-body">
+      <p class="text-success"><%=@success%></p>
+    </div>
+    <div class="modal-footer">
+      <!-- <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      <button class="btn btn-primary">Save changes</button> -->
+      <form method="get" action="/bet" id="play_again">
+        <input type="submit" class="btn btn-primary" value="Play again">
+      </form>
+      <form method="get" action="/game/over" id="end">
+        <input type="submit" class="btn" value="No thanks">
+      </form>
+    </div>
+    </div>
+    <% end %>
+   
+  
+
+  <div id='game'>
   <% if @game_end %>
-  <div class="lead">
-    <form method="get" action="/bet" id="hit">
+
+    <!-- <form method="get" action="/bet" id="play_again">
       <input type="submit" class="btn btn-primary" value="Play again">
     </form>
-    <form method="get" action="/game/over" id="">
+    <form method="get" action="/game/over" id="end">
       <input type="submit" class="btn" value="No thanks">
     </form>
-  </div>
+  -->
+
   <%end%>
-  
+ <div class="well">
   <h3>Dealer's cards</h3>
   <% if @stay %>
   <% @dealershand.each do |picture|%>
-    <img src="/images/cards/<%=picture%>.jpg" class="shadow" />
+    <img src="/images/cards/<%=picture%>.jpg" class="shadow img-rounded" />
   <%end%>
 
 <br/> 
@@ -22,7 +69,7 @@
 
   <% else %>
   <img src='/images/cards/cover.jpg' />
-  <img src='/images/cards/<%=@dealershand.last%>.jpg' class="shadow"/>
+  <img src='/images/cards/<%=@dealershand.last%>.jpg' class="shadow img-rounded"/>
   <hr>
   <%end%>
 
@@ -33,15 +80,20 @@
   </form>
   </blockquote>
   <% end %>
+</div>
 
 
-  <h3><%=session[:name]%>'s cards</h3>
+<div class="well">
+  <h4><%=session[:name]%>'s cards</h4>
   <% @playershand.each do |picture|%>
-    <img src="/images/cards/<%=picture%>.jpg" class="shadow" />
+    <img src="/images/cards/<%=picture%>.jpg" class="shadow img-rounded" />
   <%end%>
   <br/>
   <br>
-  <blockquote><p><%=session[:name]%>, you have a total of <span class="badge badge-info"><%= calculate_total(session[:player_hand]) %></span></p></blockquote>
+  <blockquote>
+    <p><%=session[:name]%>, you have a total of <span class="badge badge-info"><%= calculate_total(session[:player_hand]) %></span></p>
+    <p>This rounds bet: <span class="badge badge-error"><%=session[:bet]%>$</span></p>
+  </blockquote>
   <h4></h4>
 
   
@@ -59,8 +111,8 @@
     </form>
     </blockquote>
   <% end %>
-
-
+</div>
+</div>
 
 
   
